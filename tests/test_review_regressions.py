@@ -138,11 +138,11 @@ def test_dimension_cli_excludes_followups():
 
 
 def test_dimension_reports_distinguish_cold_and_warm_indexes(tmp_path: Path):
-    def factory(dimension, embeddings):
+    def factory(dimension, embeddings_client):
         timings = {}
         spec = IndexSpec("benchmark", "corpus", "fake", dimension, 100, 10)
         store, _ = open_or_create_store(
-            embeddings=embeddings,
+            embeddings_client=embeddings_client,
             chunks=[doc("doc")],
             index_root=tmp_path,
             spec=spec,

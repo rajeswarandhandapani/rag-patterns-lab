@@ -51,20 +51,22 @@ class DimensionExperiment:
         """
         results = []
         for dimensions in self.dimensions:
-            embeddings = self.embedding_factory(dimensions)
-            store, index_path, index_timings = self.store_factory(dimensions, embeddings)
+            # The factory returns a client that calls the embedding model.
+            # Individual calls below return the numeric vectors.
+            embeddings_client = self.embedding_factory(dimensions)
+            store, index_path, index_timings = self.store_factory(dimensions, embeddings_client)
             embed_latencies: list[float] = []
             search_latencies: list[float] = []
             recalls: list[float] = []
             reciprocal_ranks: list[float] = []
             if self.queries:
-                warm_vector = embeddings.embed_query(self.queries[0][0])
+                warm_vector = embeddings_client.embed_query(self.queries[0][0])
                 store.similarity_search_by_vector(warm_vector, k=self.top_k)
             for query, expected_documents in self.queries:
                 returned: list[Document] = []
                 for _ in range(self.repetitions):
                     started = perf_counter()
-                    vector = embeddings.embed_query(query)
+                    vector = embeddings_client.embed_query(query)
                     embed_latencies.append((perf_counter() - started) * 1000)
                     started = perf_counter()
                     # Supply an already embedded vector so this interval excludes

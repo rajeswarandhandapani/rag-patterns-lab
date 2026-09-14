@@ -62,7 +62,8 @@ def _resources(settings: Settings, lab: str, dimensions: int | None, rebuild: bo
     """
     documents = load_documents(settings.data_dir)
     chunks = split_documents(documents, settings.chunk_size, settings.chunk_overlap)
-    embeddings = create_embeddings(settings, dimensions)
+    # This object calls Azure to create vectors; it is not the vectors themselves.
+    embeddings_client = create_embeddings(settings, dimensions)
     spec = IndexSpec(
         lab=lab,
         corpus_fingerprint=corpus_fingerprint(
@@ -74,7 +75,7 @@ def _resources(settings: Settings, lab: str, dimensions: int | None, rebuild: bo
         chunk_overlap=settings.chunk_overlap,
     )
     store, created = open_or_create_store(
-        embeddings=embeddings,
+        embeddings_client=embeddings_client,
         chunks=chunks,
         index_root=settings.index_dir,
         spec=spec,
@@ -234,7 +235,7 @@ def compare_dimensions(
         case for case in standalone_cases(load_cases(settings.eval_file)) if case.expected_documents
     ]
 
-    def store_factory(dimension: int, embeddings: Any):
+    def store_factory(dimension: int, embeddings_client: Any):
         """Closure: use the enclosing function's corpus/settings for every dimension."""
         spec = IndexSpec(
             lab="vector-dimensions",
@@ -246,7 +247,7 @@ def compare_dimensions(
         )
         timings: dict[str, Any] = {}
         store, _ = open_or_create_store(
-            embeddings=embeddings,
+            embeddings_client=embeddings_client,
             chunks=chunks,
             index_root=settings.index_dir,
             spec=spec,

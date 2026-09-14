@@ -60,7 +60,7 @@ class IndexSpec:
 
 def open_or_create_store(
     *,
-    embeddings: Embeddings,
+    embeddings_client: Embeddings,
     chunks: list[Document],
     index_root: Path,
     spec: IndexSpec,
@@ -89,7 +89,9 @@ def open_or_create_store(
     if created and path.exists():
         shutil.rmtree(path)
     path.mkdir(parents=True, exist_ok=True)
-    measured_embeddings = TimedEmbeddings(embeddings)
+    # This is an API client, not a list of numeric embedding vectors.  The
+    # wrapper records the time Chroma spends asking it to create vectors.
+    measured_embeddings = TimedEmbeddings(embeddings_client)
     started = perf_counter()
     store = Chroma(
         collection_name=spec.collection_name,
