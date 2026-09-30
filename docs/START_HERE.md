@@ -24,15 +24,15 @@ question. A plausible answer is not proof of correctness: inspect its evidence.
 
 ```mermaid
 flowchart TD
-    Files[Markdown documents] --> Split[Split into chunks]
-    Split --> Embed[Embedding model produces vectors]
-    Embed --> Store[(Local Chroma collection)]
-    Question[User question] --> QueryVector[Embed the question]
-    QueryVector --> Search[Find similar stored vectors]
+    Files["Markdown documents"] --> Split["Split into chunks"]
+    Split --> Embed["Embedding model produces vectors"]
+    Embed --> Store[("Local Chroma collection")]
+    Question["User question"] --> QueryVector["Embed the question"]
+    QueryVector --> Search["Find similar stored vectors"]
     Store --> Search
-    Search --> Prompt[Question plus retrieved chunk text]
-    Prompt --> Chat[Chat model generates an answer]
-    Chat --> Result[Answer with evidence references]
+    Search --> Prompt["Question plus retrieved chunk text"]
+    Prompt --> Chat["Chat model generates an answer"]
+    Chat --> Result["Answer with evidence references"]
 ```
 
 The top path is **ingestion**, usually done once per corpus/configuration. The bottom

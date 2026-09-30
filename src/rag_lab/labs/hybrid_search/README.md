@@ -8,25 +8,25 @@ corpus mixes natural-language concepts with identifiers such as `PAY-2031`, head
 paths. Reciprocal-rank fusion (RRF) combines ranks without trying to normalize incompatible scores.
 
 ```mermaid
-flowchart LR
-    Q[Question] --> Dense[Dense cosine search]
-    Q --> BM25[BM25 lexical search]
-    Dense --> RRF[Reciprocal-rank fusion]
+flowchart TD
+    Q["Question"] --> Dense["Dense cosine search"]
+    Q --> BM25["BM25 lexical search"]
+    Dense --> RRF["Reciprocal-rank fusion"]
     BM25 --> RRF
-    RRF --> K[Top-k unique chunks] --> LLM[Cited generation]
+    RRF --> K["Top-k unique chunks"]
+    K --> LLM["Cited generation"]
 ```
 
 ```mermaid
-sequenceDiagram
-    participant R as HybridRag
-    participant D as Chroma
-    participant B as BM25
-    R->>D: What does PAY-2031 require?
-    R->>B: Tokenized exact query
-    D-->>R: Semantic ranking
-    B-->>R: Exact-token ranking
-    R->>R: Sum 1/(60 + rank), deduplicate, truncate
-    R-->>R: Generate from fused top-k
+flowchart TD
+    R["HybridRag receives PAY-2031 question"] --> D["Run Chroma semantic search"]
+    R --> B["Run BM25 exact-token search"]
+    D --> DS["Semantic ranking"]
+    B --> BS["Exact-token ranking"]
+    DS --> F["Sum reciprocal ranks and deduplicate"]
+    BS --> F
+    F --> T["Keep fused top-k"]
+    T --> A["Generate cited answer"]
 ```
 
 ## Run it

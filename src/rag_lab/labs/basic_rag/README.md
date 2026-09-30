@@ -7,26 +7,24 @@ Use this baseline when one semantic search is sufficient and predictable latency
 the most important RAG choices—chunking, top-k, evidence, and prompting—easy to inspect.
 
 ```mermaid
-flowchart LR
-    Files[Markdown files] --> Split[Recursive chunking]
-    Split --> Embed[Azure embeddings]
-    Embed --> Chroma[(Chroma)]
-    Question --> Search[Cosine search]
-    Chroma --> Search --> Context[Top-k chunks]
-    Context --> Chat[Azure chat model] --> Answer[Cited answer]
+flowchart TD
+    Files["Markdown files"] --> Split["Recursive chunking"]
+    Split --> Embed["Azure embeddings"]
+    Embed --> Chroma[("Chroma")]
+    Question["Question"] --> Search["Cosine search"]
+    Chroma --> Search
+    Search --> Context["Top-k chunks"]
+    Context --> Chat["Azure chat model"]
+    Chat --> Answer["Cited answer"]
 ```
 
 ```mermaid
-sequenceDiagram
-    participant U as User
-    participant R as BasicRag
-    participant V as Chroma
-    participant M as Chat model
-    U->>R: What does ORD-4097 mean?
-    R->>V: similarity_search_with_relevance_scores(k=4)
-    V-->>R: order-service chunks + scores
-    R->>M: question + cited context
-    M-->>U: Meaning and [03_orders:chunk_id]
+flowchart TD
+    U["User asks what ORD-4097 means"] --> R["BasicRag receives question"]
+    R --> V["Chroma similarity search with top-k 4"]
+    V --> C["Order-service chunks and scores"]
+    C --> M["Send question and cited context to chat model"]
+    M --> A["Return meaning and evidence citation"]
 ```
 
 ## Run it

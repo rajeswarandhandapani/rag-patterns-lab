@@ -8,26 +8,22 @@ reads each question-candidate pair and can order a small candidate set more prec
 first-stage recall is adequate but the best evidence often appears too low.
 
 ```mermaid
-flowchart LR
-    Q[Question] --> Retrieve[Dense retrieve 12]
-    Retrieve --> Pairs[Question/chunk pairs]
-    Pairs --> Cross[Local cross-encoder]
-    Cross --> Sort[Sort and keep 4]
-    Sort --> Chat[Cited generation]
+flowchart TD
+    Q["Question"] --> Retrieve["Dense retrieve 12"]
+    Retrieve --> Pairs["Question/chunk pairs"]
+    Pairs --> Cross["Local cross-encoder"]
+    Cross --> Sort["Sort and keep 4"]
+    Sort --> Chat["Cited generation"]
 ```
 
 ```mermaid
-sequenceDiagram
-    participant R as RerankedRag
-    participant V as Chroma
-    participant C as Cross-encoder
-    participant M as Chat model
-    R->>V: Retrieve candidate_k=12
-    V-->>R: Candidate chunks
-    R->>C: Score every question/chunk pair
-    C-->>R: Relevance scores
-    R->>M: Best top_k chunks
-    M-->>R: Answer with citations
+flowchart TD
+    R["RerankedRag receives question"] --> V["Retrieve 12 candidates from Chroma"]
+    V --> P["Create question and chunk pairs"]
+    P --> C["Cross-encoder scores each pair"]
+    C --> S["Sort by relevance score"]
+    S --> K["Keep best top-k chunks"]
+    K --> M["Chat model answers with citations"]
 ```
 
 ## Run it

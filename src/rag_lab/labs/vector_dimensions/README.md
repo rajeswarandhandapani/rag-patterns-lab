@@ -9,28 +9,29 @@ distance metric, questions, and top-k fixed.
 
 ```mermaid
 flowchart TD
-    Corpus[Fixed chunks] --> E256[Embed: 256]
-    Corpus --> E512[Embed: 512]
-    Corpus --> E1024[Embed: 1024]
-    Corpus --> E1536[Embed: 1536]
-    E256 --> I256[(Index 256)]
-    E512 --> I512[(Index 512)]
-    E1024 --> I1024[(Index 1024)]
-    E1536 --> I1536[(Index 1536)]
-    I256 & I512 & I1024 & I1536 --> Compare[Quality / latency / bytes]
+    Corpus["Fixed chunks"] --> E256["Embed: 256"]
+    Corpus --> E512["Embed: 512"]
+    Corpus --> E1024["Embed: 1024"]
+    Corpus --> E1536["Embed: 1536"]
+    E256 --> I256[("Index 256")]
+    E512 --> I512[("Index 512")]
+    E1024 --> I1024[("Index 1024")]
+    E1536 --> I1536[("Index 1536")]
+    I256 --> Compare["Compare quality, latency, and bytes"]
+    I512 --> Compare
+    I1024 --> Compare
+    I1536 --> Compare
 ```
 
 ```mermaid
-sequenceDiagram
-    participant X as Experiment
-    participant E as Azure embeddings
-    participant V as Dimension-specific Chroma
-    X->>E: Embed fixed corpus at dimension d
-    X->>E: Warm up, then time query embedding
-    E-->>X: Query vector
-    X->>V: Time search_by_vector repeatedly
-    V-->>X: Top-k documents
-    X->>X: Recall@k, MRR, raw and persisted bytes
+flowchart TD
+    X["Start one dimension experiment"] --> E["Embed fixed corpus at dimension d"]
+    E --> V[("Dimension-specific Chroma index")]
+    V --> W["Warm up query embedding and search"]
+    W --> Q["Time query embedding"]
+    Q --> S["Time vector search repeatedly"]
+    S --> K["Collect top-k documents"]
+    K --> M["Calculate recall, MRR, and storage"]
 ```
 
 ## Run it

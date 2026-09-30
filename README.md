@@ -18,6 +18,11 @@ For a paced, hands-on route, follow the [14-day learning checklist](docs/DAILY_P
 Prerequisites: Python 3.12, [`uv`](https://docs.astral.sh/uv/), and Foundry deployments for a chat
 model and `text-embedding-3-small`.
 
+This repository's `.vscode/settings.json` tells VS Code to search for a `.venv` in this workspace.
+After `uv sync`, VS Code discovers the platform-specific interpreter inside that environment. If VS
+Code was already open while the environment was rebuilt, run **Developer: Reload Window** once, then
+use **Python: Select Interpreter** and choose the discovered `.venv` entry if necessary.
+
 ```bash
 cp .env.example .env
 # Fill in the Azure values in .env
@@ -49,12 +54,12 @@ modes, tradeoffs, and three exercises. Run `uv run rag-lab --help` for the share
 ## Shared experiment design
 
 ```mermaid
-flowchart LR
-    D[20 source documents] --> C[Deterministic chunks]
-    C --> L[Selected lab]
-    Q[30 labeled questions] --> L
-    L --> R[Answer + cited evidence + trace]
-    R --> E[Recall@k, MRR, citation validity, latency]
+flowchart TD
+    D["20 source documents"] --> C["Deterministic chunks"]
+    C --> L["Selected lab"]
+    Q["30 labeled questions"] --> L
+    L --> R["Answer + cited evidence + trace"]
+    R --> E["Recall@k, MRR, citation validity, latency"]
 ```
 
 Indexes live under `.rag_indexes/`. A manifest records corpus fingerprint, chunking, model, and

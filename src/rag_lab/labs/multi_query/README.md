@@ -8,29 +8,28 @@ search formulations, retrieves each one, then fuses and deduplicates the ranking
 is more valuable than the latency and token cost of query expansion.
 
 ```mermaid
-flowchart LR
-    Q[Original question] --> Expand[Generate 3 variants]
-    Expand --> Q1[Original]
-    Expand --> Q2[Variant 1]
-    Expand --> Q3[Variant 2]
-    Expand --> Q4[Variant 3]
-    Q1 & Q2 & Q3 & Q4 --> Search[Dense search each]
-    Search --> RRF[Fuse + deduplicate] --> Chat[Answer original question]
+flowchart TD
+    Q["Original question"] --> Expand["Generate 3 variants"]
+    Expand --> Q1["Original"]
+    Expand --> Q2["Variant 1"]
+    Expand --> Q3["Variant 2"]
+    Expand --> Q4["Variant 3"]
+    Q1 --> Search["Dense search each query"]
+    Q2 --> Search
+    Q3 --> Search
+    Q4 --> Search
+    Search --> RRF["Fuse and deduplicate"]
+    RRF --> Chat["Answer original question"]
 ```
 
 ```mermaid
-sequenceDiagram
-    participant R as MultiQueryRag
-    participant M as Chat model
-    participant V as Chroma
-    R->>M: Generate alternate searches
-    M-->>R: Three lines
-    loop Original plus variants
-        R->>V: Similarity search
-        V-->>R: Ranking
-    end
-    R->>R: RRF and deduplicate by chunk_id
-    R->>M: Original question + fused evidence
+flowchart TD
+    R["MultiQueryRag receives question"] --> M["Generate three alternate searches"]
+    M --> L["Original question plus three variants"]
+    L --> V["Run Chroma search for every query"]
+    V --> F["Fuse rankings by reciprocal rank"]
+    F --> D["Deduplicate by chunk ID"]
+    D --> A["Answer original question from fused evidence"]
 ```
 
 ## Run it

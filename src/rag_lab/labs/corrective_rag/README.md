@@ -9,24 +9,30 @@ abstains. Use it when an extra validation call is justified by the cost of unsup
 
 ```mermaid
 flowchart TD
-    Q[Question] --> R[Retrieve]
-    R --> G[Grade evidence]
-    G -->|sufficient| A[Answer with citations]
-    G -->|weak and attempt 1| W[Rewrite query]
+    Q["Question"] --> R["Retrieve"]
+    R --> G["Grade evidence"]
+    G --> S["Sufficient evidence"]
+    S --> A["Answer with citations"]
+    G --> F["Weak evidence on first attempt"]
+    F --> W["Rewrite query"]
     W --> R
-    G -->|weak and attempt 2| X[Abstain]
+    G --> L["Weak evidence at attempt limit"]
+    L --> X["Abstain"]
 ```
 
 ```mermaid
-stateDiagram-v2
-    [*] --> retrieve
-    retrieve --> grade
-    grade --> answer: relevant
-    grade --> rewrite: irrelevant and attempts < 2
-    rewrite --> retrieve
-    grade --> abstain: irrelevant and attempts = 2
-    answer --> [*]
-    abstain --> [*]
+flowchart TD
+    Start["Start"] --> Retrieve["Retrieve node"]
+    Retrieve --> Grade["Grade node"]
+    Grade --> Relevant["Relevant evidence"]
+    Relevant --> Answer["Answer node"]
+    Answer --> End["End"]
+    Grade --> Retry["Irrelevant and fewer than two attempts"]
+    Retry --> Rewrite["Rewrite node"]
+    Rewrite --> Retrieve
+    Grade --> Limit["Irrelevant after two attempts"]
+    Limit --> Abstain["Abstain node"]
+    Abstain --> End
 ```
 
 ## Run it

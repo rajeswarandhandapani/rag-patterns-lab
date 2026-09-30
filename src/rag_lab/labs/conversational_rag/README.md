@@ -8,20 +8,22 @@ the latest turn into a standalone retrieval query using only the selected sessio
 retrieves and answers. Use it for multi-turn assistants where retrieval must remain inspectable.
 
 ```mermaid
-flowchart LR
-    Turn[Latest turn + session history] --> Rewrite[Rewrite node]
-    Rewrite --> Standalone[Standalone query]
-    Standalone --> Retrieve[Retrieve node]
-    Retrieve --> Answer[Answer node]
-    Answer --> Memory[Append turn to that session]
+flowchart TD
+    Turn["Latest turn + session history"] --> Rewrite["Rewrite node"]
+    Rewrite --> Standalone["Standalone query"]
+    Standalone --> Retrieve["Retrieve node"]
+    Retrieve --> Answer["Answer node"]
+    Answer --> Memory["Append turn to that session"]
 ```
 
 ```mermaid
-stateDiagram-v2
-    [*] --> rewrite
-    rewrite --> retrieve: standalone_question
-    retrieve --> answer: documents
-    answer --> [*]: answer + usage
+flowchart TD
+    Start["Start with latest question and session history"] --> Rewrite["Rewrite node"]
+    Rewrite --> Standalone["State gains standalone question"]
+    Standalone --> Retrieve["Retrieve node"]
+    Retrieve --> Documents["State gains documents"]
+    Documents --> Answer["Answer node"]
+    Answer --> Result["Final state has answer and usage"]
 ```
 
 ## Run it
